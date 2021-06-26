@@ -1,7 +1,8 @@
 import discord
 import Classroom
 
-client = discord.Client()
+intents = discord.Intents.all()
+client = discord.Client(intents=intents)
 attendance = Classroom.Attendance() 
 
 @client.event
@@ -34,13 +35,19 @@ async def on_message(message):
         if attendance.text_attendance == 0:
             await message.channel.send('Attendance hasn\'t been recorded, use $textattendance to start an attendance poll')
             return
-        attendanceStr = '**ATTENDEES**\n'
+        if 'csv' in message.content:
+            attendanceStr = 'ATTENDEES\n'
+        else:
+            attendanceStr = '✅**ATTENDEES**✅\n'
         for attendee in attendance.attendees:
             if attendee.nick:
                 attendanceStr += f'{attendee.nick}\n'
             else:
                 attendanceStr += f'{attendee.display_name}\n'
-        attendanceStr += '**ABSENTEES**\n'
+        if 'csv' in message.content:
+            attendanceStr += '\nABSENTEES\n'
+        else:
+            attendanceStr += '\n❌**ABSENTEES**❌\n'
         for member in message.guild.members:
             if member not in attendance.attendees:
                 for role in member.roles:
@@ -49,7 +56,16 @@ async def on_message(message):
                             attendanceStr += f'{member.nick}\n'
                         else:
                             attendanceStr += f'{member.display_name}\n'
-        await message.channel.send(attendanceStr)
+        
+        if 'csv' in message.content:
+            fp = open('Attendance.csv', 'w', encoding='utf-8')
+            fp.write(attendanceStr)
+            fp.close()
+            sendFile = discord.File('Attendance.csv')
+            await message.channel.send(file=sendFile)
+            
+        else:
+            await message.channel.send(attendanceStr)
     
     #Reset the attendance object to the initial condition
     if message.content.startswith('$clearattendance'):
@@ -68,4 +84,4 @@ async def on_reaction_add(reaction, user):
         attendance.attendees.add(user)
         
 
-client.run('ODU3NTU2ODAwMDAxNTQwMTE3.YNRUAQ.SwFfqIzS_Y5AN8TRNZSnxzA33RI')
+client.run('ODU3NTU2ODAwMDAxNTQwMTE3.YNRUAQ.zAT5KQgev4vy0OnR35M9S9hWN98')
