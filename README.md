@@ -29,10 +29,10 @@ All schoothBot commands begin with '$'.
   ### _Save attendance as a csv file_:
   Syntax: `$att show save`
 
-  ### _Bot's Random Cringey jokes_
+  ### _Bot's Random Cringey jokes:_
   Syntax:` $cringe`
 
-  ### _Fun trivia_
+  ### _Fun trivia:_
   Syntax:` $question <CATEGORY> <NUMBER OF QUESTIONS>`
 
   ### _Quick search on a certain topic:_
