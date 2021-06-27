@@ -16,33 +16,34 @@ rapidAPI
 
 ## Bot commands 
 All schoothBot commands begin with '$'.
-## Initiate text attendance:
-Syntax: `$att poll`
 
-### Initiate automatic voice-chat attendance:
-Syntax: `$att voice`
+    ### Initiate text attendance:
+    Syntax: `$att poll`
 
-### Show attendance data:
-Syntax: `$att show`
-  
-### Save attendance as a csv file:
-Syntax: `$att show save`
+    ### Initiate automatic voice-chat attendance:
+    Syntax: `$att voice`
 
-### Bot's Random Cringey jokes ### 
-Syntax:` $cringe`
-  
-### Fun trivia ###
-Syntax:` $question <CATEGORY> <NUMBER OF QUESTIONS>`
-  
-### Quick search on a certain topic ###
-Syntax:` $search "<QUERY>" <NUMBER OF RESULTS>`
+    ### Show attendance data:
+    Syntax: `$att show`
 
-### Create a popquiz:
-Syntax:` $popquiz create`
+    ### Save attendance as a csv file:
+    Syntax: `$att show save`
 
-### Start popquiz:
-Syntax:` $popquiz throw`
+    ### Bot's Random Cringey jokes ### 
+    Syntax:` $cringe`
 
-###reveal answers to the quiz:
-Syntax:` $popquiz reveal`
-  
+    ### Fun trivia ###
+    Syntax:` $question <CATEGORY> <NUMBER OF QUESTIONS>`
+
+    ### Quick search on a certain topic ###
+    Syntax:` $search "<QUERY>" <NUMBER OF RESULTS>`
+
+    ### Create a popquiz:
+    Syntax:` $popquiz create`
+
+    ### Start popquiz:
+    Syntax:` $popquiz throw`
+
+    ###reveal answers to the quiz:
+    Syntax:` $popquiz reveal`
+
