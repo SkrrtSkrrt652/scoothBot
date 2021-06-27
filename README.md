@@ -12,7 +12,7 @@ When we set out to build a project for the education track, we were trying to br
 
 ## APIs Used 
 discord.py
-rapidAPI
+rapidAPI(Google API, Bing Image Search API and Random Stuff API)
 
 ## Bot commands 
 All schoothBot commands begin with '$'.
