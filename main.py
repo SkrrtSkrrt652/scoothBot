@@ -292,7 +292,7 @@ async def on_ready():
 
 
 @bot.command()
-async def search(ctx, query,number):
+async def qsearch(ctx, query,number):
     search = quick_search.QuickSearch()
     await ctx.send("**" +query.upper()+ "**")
     raw_img_data = search.quickImageSearch(query=query.lower(),number=number)
