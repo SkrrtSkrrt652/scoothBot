@@ -2,17 +2,20 @@ import json
 
 import requests
 
+
 class QuickSearch:
-    def quickImageSearch(self,query = "iron man",number = 1):
+    def quickImageSearch(self, query="iron man", number=1):
         querystring = {"q": query}
 
         headers = {
-            'x-rapidapi-key': "KEY",
-            'x-rapidapi-host': "bing-image-search1.p.rapidapi.com"
+            "x-rapidapi-key": "KEY",
+            "x-rapidapi-host": "bing-image-search1.p.rapidapi.com",
         }
 
         img_url = "https://bing-image-search1.p.rapidapi.com/images/search"
-        img_response_raw = requests.request("GET", img_url, headers=headers, params=querystring)
+        img_response_raw = requests.request(
+            "GET", img_url, headers=headers, params=querystring
+        )
         img_response = json.loads(img_response_raw.text)
         print(img_response)
         img_response = json.loads(json.dumps(img_response["relatedSearches"]))
@@ -21,16 +24,20 @@ class QuickSearch:
         # print(json.dumps(img_response))
         return img_response
 
-
-    def quickSearch(self,query,number = 1):
+    def quickSearch(self, query, number=1):
         query = query.strip()
         query = query.replace(" ", "+")
 
-        url = "https://google-search3.p.rapidapi.com/api/v1/search/q="+query+"&num="+str(number)
+        url = (
+            "https://google-search3.p.rapidapi.com/api/v1/search/q="
+            + query
+            + "&num="
+            + str(number)
+        )
 
         headers = {
-            'x-rapidapi-key': "KEY",
-            'x-rapidapi-host': "google-search3.p.rapidapi.com"
+            "x-rapidapi-key": "KEY",
+            "x-rapidapi-host": "google-search3.p.rapidapi.com",
         }
 
         response = requests.request("GET", url, headers=headers)
