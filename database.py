@@ -1,3 +1,4 @@
+from typing import List
 import _sqlite3 as db
 
 class DataBase:
@@ -41,3 +42,29 @@ class DataBase:
             self.conn.close()
             return 0
 
+    def list_saved_files(self):
+        self.open_connection()
+        self.c.execute("SELECT COUNT(file_name) FROM files")      
+        if  self.c.fetchall()[0][0] != 0:
+            self.c.execute("SELECT id,file_name,uploader,time FROM files")
+            data = self.c.fetchall()
+            self.conn.close()
+            return data
+        else:
+            return 0
+
+    def delete_file(self,file_ids :List):
+        failed_deletions = []
+        self.open_connection()
+        for id in file_ids:
+            try:
+                #print(id)
+                self.c.execute("DELETE FROM files WHERE id = ?",(int(id),))
+                self.conn.commit()
+            except Exception:
+                failed_deletions.append(id)
+        self.conn.close()
+        if not len(failed_deletions):
+            return 1
+        else:
+            return failed_deletions

@@ -11,6 +11,7 @@ import datetime
 import Classroom
 import cringe
 import search
+from tabulate import tabulate
 
 intents = discord.Intents.all()
 bot = Bot(command_prefix="$", intents=intents)
@@ -211,18 +212,19 @@ async def att(ctx, arg="", arg2=""):
             await ctx.send(f"Tracking attendance in `{channel.name}`✅")
 
 
-@bot.command()
-async def _help(ctx):
-    await ctx.send(
-        "format : $question <CATEGORY> <NUMBER OF QUESTIONS>\n\
-             Example : $question sciencenature 3"
-    )
-    await ctx.send("Available Categories :")
-    list = ""
-    global categories
-    for category in categories:
-        list += "\t\t" + category + "\n"
-    await ctx.send(list)
+# @bot.command()
+# # async def help(ctx,user_cmd):
+# #     if user_cmd == 'qsearch':
+# #         await ctx.send(
+# #             "format : $question <CATEGORY> <NUMBER OF QUESTIONS>\n\
+# #                 Example : $question sciencenature 3"
+# #         )
+# #         await ctx.send("Available Categories :")
+# #         list = ""
+# #         global categories
+# #         for category in categories:
+# #             list += "\t\t" + category + "\n"
+# #         await ctx.send(list)
 
 
 @bot.command()
@@ -261,7 +263,7 @@ async def question(ctx, question, limit):
                     await ctx.send("The answer is " + q["answer"] + " 🥺")
     elif categories.count(question):
         await ctx.send("Category not available, heres some help")
-        await _help(ctx)
+        await help(ctx)
     else:
         await ctx.send("Dammit dude stick to them rules")
 
@@ -414,20 +416,46 @@ async def display(ctx):
 
 @bot.command()
 async def save(ctx,file_name :str,category :str = "general"):
-    for attachment in ctx.message.attachments:
-        timestamp = str(datetime.datetime.now())
-        result = db.file_metadata(uploader = ctx.message.author.name,date=timestamp,file_name=file_name,file_url=str(attachment))
-        if result:
-            await ctx.send(ctx.author.mention + " has uploaded "+file_name+"! :v:")
+    if file_name == None:
+        if ctx.message.attachments:
+            for attachment in ctx.message.attachments:
+                timestamp = str(datetime.datetime.today())
+                result = db.file_metadata(uploader = ctx.message.author.name,date=timestamp,file_name=file_name,file_url=str(attachment))
+                if result:
+                    await ctx.send(ctx.author.mention + " has uploaded "+file_name+"! :v:")
+                else:
+                    await ctx.send("A file with that name already exists. Are you sure you haven't uploaded the same file before? :thinking:")
         else:
-            await ctx.send("A file with that name already exists. Are you sure you haven't uploaded the same file before? :thinking:")
+            await ctx.send("Are you sure there is an attachment here? :face_with_raised_eyebrow:")
+    else :
+        await ctx.send("Seems like the command usage was incorrect.\nUse command $help to look at the usage.")
 
 @bot.command()
 async def retrieve(ctx,file_name:str):
     data = db.file_retrieve(file_name=file_name)
-    await ctx.send("Here's your file! \n\n Uploaded by {} on {} ".format(data[1],data[2][0:11])+ctx.message.author.mention)
-    await ctx.send(data[4])
+    if data != 0:
+        await ctx.send("Here's your file! \n\n Uploaded by {} on {} ".format(data[1],data[2])+ctx.message.author.mention)
+        await ctx.send(data[4])
+    else :
+        await ctx.send("Sorry I have no such file. :no_mouth:")
 
+@bot.command()
+async def notes(ctx):
+    files = db.list_saved_files()
+    if files != 0:
+        await ctx.send("`\n"+tabulate((files),headers=["ID","File","Uploaded By","Date"],tablefmt="fancy_grid")+"`")
+    else:
+        await ctx.send("Seems like nobody has asked me to store anything or the database has been reset.")
+
+@bot.command()
+async def delete(ctx,file_ids :str):
+    file_ids.replace(" ","")
+    file_ids_list = list(file_ids.split(","))
+    failed = db.delete_file(file_ids_list)
+    if failed == 1:
+        await ctx.send("Deleted successfully!")
+    else:
+        await ctx.send("Failed to delete `"+str(failed)+"` because it/they do not exist")
 
 TOKEN = 'ODU3NTU2ODAwMDAxNTQwMTE3.YNRUAQ.NlInAOdnHDvDBEKmqgsKLlBuD4Q'
 bot.run(TOKEN)
