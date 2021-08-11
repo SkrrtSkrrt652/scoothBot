@@ -1,11 +1,13 @@
 import discord
 from discord.ext.commands import Bot
 from discord.ext import commands
+from discord.message import Attachment
+import database
 import time
 import json
 import random
 import quick_search
-
+import datetime
 import Classroom
 import cringe
 import search
@@ -31,6 +33,8 @@ categories = [
     "religionmythology",
     "sportsleisure",
 ]
+db = database.DataBase()
+
 
 
 def prettier_time(time):
@@ -408,7 +412,22 @@ async def display(ctx):
             DB8fA%3D%3D&ixlib=rb-1.2.1&w=1000&q=80"
     )
 
+@bot.command()
+async def save(ctx,file_name :str,category :str = "general"):
+    for attachment in ctx.message.attachments:
+        timestamp = str(datetime.datetime.now())
+        result = db.file_metadata(uploader = ctx.message.author.name,date=timestamp,file_name=file_name,file_url=str(attachment))
+        if result:
+            await ctx.send(ctx.author.mention + " has uploaded "+file_name+"! :v:")
+        else:
+            await ctx.send("A file with that name already exists. Are you sure you haven't uploaded the same file before? :thinking:")
 
-keyfile = open("clientkey.txt")
-TOKEN = keyfile.readline()
+@bot.command()
+async def retrieve(ctx,file_name:str):
+    data = db.file_retrieve(file_name=file_name)
+    await ctx.send("Here's your file! \n\n Uploaded by {} on {} ".format(data[1],data[2][0:11])+ctx.message.author.mention)
+    await ctx.send(data[4])
+
+
+TOKEN = 'ODU3NTU2ODAwMDAxNTQwMTE3.YNRUAQ.NlInAOdnHDvDBEKmqgsKLlBuD4Q'
 bot.run(TOKEN)
