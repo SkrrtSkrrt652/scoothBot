@@ -5,12 +5,13 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 class QuickSearch:
     def quickImageSearch(self, query="iron man", number=1):
         querystring = {"q": query}
 
         headers = {
-            "x-rapidapi-key": os.getenv('RAPID_API_KEY'),
+            "x-rapidapi-key": os.getenv("RAPID_API_KEY"),
             "x-rapidapi-host": "bing-image-search1.p.rapidapi.com",
         }
 
@@ -38,7 +39,7 @@ class QuickSearch:
         )
 
         headers = {
-            "x-rapidapi-key": os.getenv('RAPID_API_KEY'),
+            "x-rapidapi-key": os.getenv("RAPID_API_KEY"),
             "x-rapidapi-host": "google-search3.p.rapidapi.com",
         }
 

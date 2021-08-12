@@ -1,16 +1,6 @@
-import os
-import discord
+import os, discord, database, time, json, random, quick_search, datetime, Classroom, cringe, search, Constants
 from discord.ext.commands import Bot
 from discord.ext import commands
-import database
-import time
-import json
-import random
-import quick_search
-import datetime
-import Classroom
-import cringe
-import search
 from tabulate import tabulate
 from dotenv import load_dotenv
 
@@ -22,22 +12,8 @@ bot = Bot(command_prefix="$", intents=intents)
 attendance = Classroom.Attendance()
 quiz = Classroom.PopQuiz()
 
-categories = [
-    "artliterature",
-    "language",
-    "sciencenature",
-    "general",
-    "fooddrinkn",
-    "peopleplaces",
-    "geography",
-    "historyholidays",
-    "entertainment",
-    "toysgames",
-    "music mathematics",
-    "religionmythology",
-    "sportsleisure",
-]
 db = database.DataBase()
+constants = Constants.constants()
 
 
 def prettier_time(time):
@@ -121,9 +97,9 @@ async def att(ctx, arg="", arg2=""):
             and attendance.track_voice_attendance == 0
         ):
             await ctx.send(
-                "Attendance hasn't been recorded, use $textattendance to start an\
-                    attendance poll or $meetattendance to track voice channel\
-                         attendance"
+                "Attendance hasn't been recorded, use $textattendance to start an \
+attendance poll or $meetattendance to track voice channel \
+attendance"
             )
             return
 
@@ -194,7 +170,7 @@ async def att(ctx, arg="", arg2=""):
         if attendance.track_voice_attendance:
             await ctx.send(
                 f"Already tracking attendance in \
-                    `{attendance.classroom_vc.name}`"
+`{attendance.classroom_vc.name}`"
             )
             return
         attendance.track_voice_attendance = 1
@@ -214,26 +190,10 @@ async def att(ctx, arg="", arg2=""):
             await ctx.send(f"Tracking attendance in `{channel.name}`✅")
 
 
-# @bot.command()
-# # async def help(ctx,user_cmd):
-# #     if user_cmd == 'qsearch':
-# #         await ctx.send(
-# #             "format : $question <CATEGORY> <NUMBER OF QUESTIONS>\n\
-# #                 Example : $question sciencenature 3"
-# #         )
-# #         await ctx.send("Available Categories :")
-# #         list = ""
-# #         global categories
-# #         for category in categories:
-# #             list += "\t\t" + category + "\n"
-# #         await ctx.send(list)
-
-
 @bot.command()
 async def question(ctx, question, limit):
-    global categories
     # try:
-    if limit.isnumeric() and categories.count(question):
+    if limit.isnumeric() and constants.CATEGORIES.count(question):
 
         def check(msg):
             return msg.channel == ctx.channel and msg.author == ctx.author
@@ -263,7 +223,7 @@ async def question(ctx, question, limit):
                     )
                 else:
                     await ctx.send("The answer is " + q["answer"] + " 🥺")
-    elif categories.count(question):
+    elif constants.CATEGORIES.count(question):
         await ctx.send("Category not available, heres some help")
         await help(ctx)
     else:
@@ -280,7 +240,7 @@ async def popquiz(ctx, arg1="", arg2=""):
     if arg1 == "":
         await ctx.send(
             "Usage: $popquiz <action> \
-            (action=create to create a quiz)"
+(action=create to create a quiz)"
         )
     if arg1 == "create":
         if teacher.dm_channel is None:
@@ -290,10 +250,10 @@ async def popquiz(ctx, arg1="", arg2=""):
 
         await ctx.send("Okay! Check your DMs 👀")
         await tch_dmc.send(
-            "Hi! Let's create that pop quiz\nSend a csv/txt file with each line\
-                 reperesenting a question in the format\n<question>, \
-                     <option_1>, <option_2>, [option_3],...\nTwo options\
-                          are mandatory, although you can use upto 8."
+            "Hi! Let's create that pop quiz\nSend a csv/txt file with each line \
+reperesenting a question in the format\n<question>, \
+<option_1>, <option_2>, [option_3],...\nTwo options \
+are mandatory, although you can use upto 8."
         )
         fileMessage = await bot.wait_for(
             "message",
@@ -308,15 +268,15 @@ async def popquiz(ctx, arg1="", arg2=""):
             quiz.parse(quizFile)
         await tch_dmc.send(
             "Okay! Your quiz is ready. Now you can use $popquiz throw [qno] \
-                in the server to throw a question that students can respond to\
-                    . if [qno] is not given, a random question will be chosen!"
+in the server to throw a question that students can respond to \
+. if [qno] is not given, a random question will be chosen!"
         )
 
     if arg1 == "throw":
         if quiz.thrown:
             await ctx.send(
-                "Reveal the answer to the previous question before\
-                     throwing another one! Use $popquiz reveal"
+                "Reveal the answer to the previous question before \
+throwing another one! Use $popquiz reveal"
             )
             return
         quiz.thrown = 1
@@ -413,7 +373,7 @@ async def display(ctx):
     await ctx.send(
         "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?ixid"
         "=MnwxMjA3fDB8MHxzZWFyY2h8NHx8cGljfGVufDB8f\
-            DB8fA%3D%3D&ixlib=rb-1.2.1&w=1000&q=80"
+DB8fA%3D%3D&ixlib=rb-1.2.1&w=1000&q=80"
     )
 
 
@@ -440,17 +400,17 @@ async def save(ctx, file_name: str, category: str = "general"):
                 else:
                     await ctx.send(
                         "A file with that name already exists. Are you sure you haven't \
-                            uploaded the same file before? :thinking:"
+uploaded the same file before? :thinking:"
                     )
         else:
             await ctx.send(
-                "Are you sure there is an attachment here?\
-                     :face_with_raised_eyebrow:"
+                "Are you sure there is an attachment here? \
+:face_with_raised_eyebrow:"
             )
     else:
         await ctx.send(
             "Seems like the command usage was incorrect.\nUse command $help \
-                to look at the usage."
+to look at the usage."
         )
 
 
@@ -471,8 +431,8 @@ async def retrieve(ctx, file_name: str, uploader: str = None):
         await ctx.send(data[5])
     elif data == 2:
         await ctx.send(
-            "Seems like there's multiple files with that name,\
-                 please specify the uploader."
+            "Seems like there's multiple files with that name, \
+please specify the uploader."
         )
     else:
         await ctx.send("Sorry I have no such file. :no_mouth:")
@@ -494,7 +454,7 @@ async def files(ctx):
     else:
         await ctx.send(
             "Seems like nobody has asked me to store anything \
-                or the database has been reset."
+or the database has been reset."
         )
 
 
