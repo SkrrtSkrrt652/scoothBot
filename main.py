@@ -1,7 +1,6 @@
 import discord
 from discord.ext.commands import Bot
 from discord.ext import commands
-from discord.message import Attachment
 import database
 import time
 import json
@@ -35,7 +34,6 @@ categories = [
     "sportsleisure",
 ]
 db = database.DataBase()
-
 
 
 def prettier_time(time):
@@ -414,51 +412,103 @@ async def display(ctx):
             DB8fA%3D%3D&ixlib=rb-1.2.1&w=1000&q=80"
     )
 
+
 @bot.command()
-async def save(ctx,file_name :str,category :str = "general"):
-    if file_name != None:
+async def save(ctx, file_name: str, category: str = "general"):
+    if file_name is not None:
         if ctx.message.attachments:
             for attachment in ctx.message.attachments:
                 timestamp = str(datetime.datetime.today())
-                result = db.file_metadata(uploader = ctx.message.author.display_name,date=timestamp,file_name=file_name,file_category=category,file_url=str(attachment))
+                result = db.file_metadata(
+                    uploader=ctx.message.author.display_name,
+                    date=timestamp,
+                    file_name=file_name,
+                    file_category=category,
+                    file_url=str(attachment),
+                )
                 if result:
-                    await ctx.send(ctx.author.mention + " has uploaded "+file_name+"! :v:")
+                    await ctx.send(
+                        # fmt: off
+                        ctx.author.mention + " has uploaded " + file_name +
+                        " :v:"
+                        # fmt: on
+                    )
                 else:
-                    await ctx.send("A file with that name already exists. Are you sure you haven't uploaded the same file before? :thinking:")
+                    await ctx.send(
+                        "A file with that name already exists. Are you sure you haven't \
+                            uploaded the same file before? :thinking:"
+                    )
         else:
-            await ctx.send("Are you sure there is an attachment here? :face_with_raised_eyebrow:")
-    else :
-        await ctx.send("Seems like the command usage was incorrect.\nUse command $help to look at the usage.")
+            await ctx.send(
+                "Are you sure there is an attachment here?\
+                     :face_with_raised_eyebrow:"
+            )
+    else:
+        await ctx.send(
+            "Seems like the command usage was incorrect.\nUse command $help \
+                to look at the usage."
+        )
+
 
 @bot.command()
-async def retrieve(ctx,file_name:str,uploader:str = None):
-    data = db.file_retrieve(file_name=file_name,uploader=uploader)
+async def retrieve(ctx, file_name: str, uploader: str = None):
+    # fmt: off
+    data = db.file_retrieve(file_name=file_name,
+                            uploader=uploader)
+    # fmt: on
     if data != 0 and data != 2:
-        await ctx.send("Here's your file! \n\n Uploaded by {} on {} ".format(data[1],data[2])+ctx.message.author.mention)
+        await ctx.send(
+            "Here's your file! \n\n Uploaded by {} \
+                on {} ".format(
+                data[1], data[2]
+            )
+            + ctx.message.author.mention
+        )
         await ctx.send(data[5])
     elif data == 2:
-        await ctx.send("Seems like there's multiple files with that name, please specify the uploader.")
-    else :
+        await ctx.send(
+            "Seems like there's multiple files with that name,\
+                 please specify the uploader."
+        )
+    else:
         await ctx.send("Sorry I have no such file. :no_mouth:")
+
 
 @bot.command()
 async def files(ctx):
     files = db.list_saved_files()
     if files != 0:
-        await ctx.send("`\n"+tabulate((files),headers=["ID","File","Category","Uploaded By","Date"],tablefmt="fancy_grid")+"`")
+        await ctx.send(
+            "`\n"
+            + tabulate(
+                (files),
+                headers=["ID", "File", "Category", "Uploaded By", "Date"],
+                tablefmt="fancy_grid",
+            )
+            + "`"
+        )
     else:
-        await ctx.send("Seems like nobody has asked me to store anything or the database has been reset.")
+        await ctx.send(
+            "Seems like nobody has asked me to store anything \
+                or the database has been reset."
+        )
+
 
 @bot.command()
-async def delete(ctx,file_ids :str):
-    file_ids.replace(" ","")
+async def delete(ctx, file_ids: str):
+    file_ids.replace(" ", "")
     file_ids_list = list(file_ids.split(","))
     failed = db.delete_file(file_ids_list)
     if failed == 1:
         await ctx.send("Deleted successfully!")
     else:
-        await ctx.send("Failed to delete `"+str(failed)+"` because it/they do not exist")
+        await ctx.send(
+            "Failed to delete `"
+            + str(failed)
+            + "` because \
+                it/they do not exist"
+        )
 
 
-TOKEN = 'ODU3NTU2ODAwMDAxNTQwMTE3.YNRUAQ.NlInAOdnHDvDBEKmqgsKLlBuD4Q'
+TOKEN = "token here"
 bot.run(TOKEN)
