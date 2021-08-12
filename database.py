@@ -9,6 +9,7 @@ class DataBase:
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 uploader TEXT,
                 time TEXT,
+                category TEXT,
                 file_name TEXT,
                 file TEXT
             )""")
@@ -18,11 +19,11 @@ class DataBase:
         self.conn = db.connect('stored_files.db')
         self.c = self.conn.cursor()
 
-    def file_metadata(self,uploader :str, date :str,file_name :str, file_url :str):
+    def file_metadata(self,uploader :str, date :str,file_name :str,file_category :str, file_url :str):
         self.open_connection()
-        self.c.execute("SELECT COUNT(file) FROM files WHERE file_name = ?",(file_name,))
+        self.c.execute("SELECT COUNT(file) FROM files WHERE file_name = ? AND uploader =?",(file_name,uploader,))
         if not self.c.fetchall()[0][0]:
-            self.c.execute("INSERT INTO files(uploader,time,file_name,file) VALUES(?,?,?,?)",(uploader,date,file_name,file_url))
+            self.c.execute("INSERT INTO files(uploader,time,category,file_name,file) VALUES(?,?,?,?,?)",(uploader,date,file_category,file_name,file_url))
             self.conn.commit()
             self.conn.close()
             return 1
@@ -30,23 +31,43 @@ class DataBase:
             self.conn.close()
             return 0
     
-    def file_retrieve(self,file_name :str, uploader :str = None):
+    def file_retrieve(self,file_name :str, uploader :str):
         self.open_connection()
-        self.c.execute("SELECT COUNT(file_name) FROM files where file_name = ?",(file_name,))
-        if self.c.fetchall()[0][0]:
-            self.c.execute("SELECT * FROM files WHERE file_name = ?",(file_name,))
-            data = self.c.fetchone()
-            self.conn.close()
-            return data
-        else :
-            self.conn.close()
-            return 0
+        if file_name != '*':
+            if uploader != None:
+                self.c.execute("SELECT COUNT(file_name) FROM files where file_name = ? AND uploader =?",(file_name,uploader,))
+            else:
+                self.c.execute("SELECT COUNT(file_name) FROM files where file_name = ?",(file_name,))
+            count = self.c.fetchall()[0][0]
+            if count  == 1 :
+                if(uploader == None):
+                    self.c.execute("SELECT * FROM files WHERE file_name = ?",(file_name,))
+                else:
+                    self.c.execute("SELECT * FROM files WHERE file_name = ? AND uploader =?",(file_name,uploader,))
+                data = self.c.fetchone()
+                self.conn.close()
+                return data
+            elif count > 1 and uploader ==  None:
+                return 2
+            else:
+                self.conn.close()
+                return 0
+        else:
+            self.c.execute("SELECT COUNT(file_name) FROM files where uploader = ?",(uploader,))
+            if self.c.fetchall()[0][0]:
+                self.c.execute("SELECT * FROM files WHERE file_name = ?",(uploader,))
+                data = self.c.fetchone()
+                self.conn.close()
+                return data
+            else :
+                self.conn.close()
+                return 0
 
     def list_saved_files(self):
         self.open_connection()
         self.c.execute("SELECT COUNT(file_name) FROM files")      
         if  self.c.fetchall()[0][0] != 0:
-            self.c.execute("SELECT id,file_name,uploader,time FROM files")
+            self.c.execute("SELECT id,file_name,category,uploader,time FROM files")
             data = self.c.fetchall()
             self.conn.close()
             return data

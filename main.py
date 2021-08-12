@@ -416,11 +416,11 @@ async def display(ctx):
 
 @bot.command()
 async def save(ctx,file_name :str,category :str = "general"):
-    if file_name == None:
+    if file_name != None:
         if ctx.message.attachments:
             for attachment in ctx.message.attachments:
                 timestamp = str(datetime.datetime.today())
-                result = db.file_metadata(uploader = ctx.message.author.name,date=timestamp,file_name=file_name,file_url=str(attachment))
+                result = db.file_metadata(uploader = ctx.message.author.display_name,date=timestamp,file_name=file_name,file_category=category,file_url=str(attachment))
                 if result:
                     await ctx.send(ctx.author.mention + " has uploaded "+file_name+"! :v:")
                 else:
@@ -431,19 +431,21 @@ async def save(ctx,file_name :str,category :str = "general"):
         await ctx.send("Seems like the command usage was incorrect.\nUse command $help to look at the usage.")
 
 @bot.command()
-async def retrieve(ctx,file_name:str):
-    data = db.file_retrieve(file_name=file_name)
-    if data != 0:
+async def retrieve(ctx,file_name:str,uploader:str = None):
+    data = db.file_retrieve(file_name=file_name,uploader=uploader)
+    if data != 0 and data != 2:
         await ctx.send("Here's your file! \n\n Uploaded by {} on {} ".format(data[1],data[2])+ctx.message.author.mention)
-        await ctx.send(data[4])
+        await ctx.send(data[5])
+    elif data == 2:
+        await ctx.send("Seems like there's multiple files with that name, please specify the uploader.")
     else :
         await ctx.send("Sorry I have no such file. :no_mouth:")
 
 @bot.command()
-async def notes(ctx):
+async def files(ctx):
     files = db.list_saved_files()
     if files != 0:
-        await ctx.send("`\n"+tabulate((files),headers=["ID","File","Uploaded By","Date"],tablefmt="fancy_grid")+"`")
+        await ctx.send("`\n"+tabulate((files),headers=["ID","File","Category","Uploaded By","Date"],tablefmt="fancy_grid")+"`")
     else:
         await ctx.send("Seems like nobody has asked me to store anything or the database has been reset.")
 
@@ -456,6 +458,7 @@ async def delete(ctx,file_ids :str):
         await ctx.send("Deleted successfully!")
     else:
         await ctx.send("Failed to delete `"+str(failed)+"` because it/they do not exist")
+
 
 TOKEN = 'ODU3NTU2ODAwMDAxNTQwMTE3.YNRUAQ.NlInAOdnHDvDBEKmqgsKLlBuD4Q'
 bot.run(TOKEN)
