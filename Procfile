@@ -1,1 +1,1 @@
-worker: python3 ./Discord/main.py
+worker: python3 cd Discord && python3 main.py
