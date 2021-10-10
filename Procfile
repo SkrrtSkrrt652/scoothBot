@@ -1,1 +1,1 @@
-web: python3 cd Discord && python3 main.py
+worker: python3 cd Discord && python3 main.py
