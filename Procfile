@@ -1,0 +1,1 @@
+worker: cd Discord && python3 main.py

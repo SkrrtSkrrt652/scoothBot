@@ -1,3 +1,6 @@
+__pycache__/
 scoothbot-logos.jpeg
-readme.md
+README.md
 poetry.lock
+.env
+
