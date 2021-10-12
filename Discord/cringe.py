@@ -6,11 +6,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 url = "https://random-stuff-api.p.rapidapi.com/joke/any"
-
-querystring = {"api_key": "TctfASVGKw6P"}
+querystring = {"type": "any"}
 
 headers = {
-    "x-api-key": os.getenv("API_KEY"),
+    "authorization": os.getenv("API_KEY"),
     "x-rapidapi-key": os.getenv("RAPID_API_KEY"),
     "x-rapidapi-host": "random-stuff-api.p.rapidapi.com",
 }
