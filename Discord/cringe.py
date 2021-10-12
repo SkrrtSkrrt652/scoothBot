@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-url = "https://random-stuff-api.p.rapidapi.com/joke/any"
+url = "https://random-stuff-api.p.rapidapi.com/joke"
 querystring = {"type": "any"}
 
 headers = {
