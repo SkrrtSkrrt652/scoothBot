@@ -224,10 +224,24 @@ async def question(ctx, question, limit):
                         # fmt: on
                     )
                 else:
-                    await ctx.send("The answer is " + q["answer"] + " 🥺")
+                    await ctx.send("The answer is " + q["answer"])
     elif constants.CATEGORIES.count(question) == 0:
-        await ctx.send("Category not available, heres some help")
-        await help(ctx)
+        await ctx.send(
+            "Category not available, the available catergories are:\
+            \n artliterature\
+            \n language\
+            \n sciencenature\
+            \n general\
+            \n fooddrinkn\
+            \n peopleplaces\
+            \n geography\
+            \n historyholidays\
+            \n entertainment\
+            \n toysgames\
+            \n music mathematics\
+            \n religionmythology\
+            \n sportsleisure"
+        )
     else:
         await ctx.send("Dammit dude stick to them rules")
 
