@@ -203,7 +203,7 @@ async def question(ctx, question, limit):
 
             q = get_question.get_questions(category=str(question))
             if q is not None:
-                //print("This works")
+                # print("This works")
                 await ctx.send(q["question"])
                 msg = await bot.wait_for("message", check=check)
                 msg_list = []
