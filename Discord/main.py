@@ -223,7 +223,7 @@ async def question(ctx, question, limit):
                     )
                 else:
                     await ctx.send("The answer is " + q["answer"] + " 🥺")
-    elif constants.CATEGORIES.count(question):
+    elif constants.CATEGORIES.count(question) == 0:
         await ctx.send("Category not available, heres some help")
         await help(ctx)
     else:
