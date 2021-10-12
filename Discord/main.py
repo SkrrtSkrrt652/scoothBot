@@ -200,8 +200,10 @@ async def question(ctx, question, limit):
 
         get_question = search.question()
         for i in range(int(limit)):
+
             q = get_question.get_questions(category=str(question))
-            if q is None:
+            if q is not None:
+                //print("This works")
                 await ctx.send(q["question"])
                 msg = await bot.wait_for("message", check=check)
                 msg_list = []
